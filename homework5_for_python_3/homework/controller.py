@@ -1,15 +1,14 @@
 import pystk
 
 
-def control(aim_point, current_vel, steer_gain=6, skid_thresh=0.2, target_vel=25):
+def control(aim_point, current_vel, steer_gain=6, skid_thresh=0.5, target_vel=25):
     import numpy as np
     #this seems to initialize an object
     action = pystk.Action()
 
-   
-    #control speed according to steering angle
+    if aim_point[0] < -0.5 or aim_point[0] > 0.5:
+        target_vel = 15
 
-    
     #compute acceleration
     action.acceleration = np.clip(target_vel - current_vel ,0,1)
     
