@@ -16,29 +16,87 @@ def spatial_argmax(logit):
 class Planner(torch.nn.Module):
     def __init__(self):
 
-      super().__init__()
+        super().__init__()
 
-      layers = []
-      layers.append(torch.nn.Conv2d(3,8,5,2,2))
-      layers.append(torch.nn.ReLU())
-      layers.append(torch.nn.MaxPool2d(kernel_size=5))
-      layers.append(torch.nn.BatchNorm2d(8))
-      
-      layers.append(torch.nn.Conv2d(8,16,5,2,2))
-      layers.append(torch.nn.ReLU())
-      layers.append(torch.nn.MaxPool2d(kernel_size=5))
-      layers.append(torch.nn.BatchNorm2d(16))
+        layers = []
+        # block 1
+        layers.append(torch.nn.Conv2d(in_channels=3, out_channels=64, padding=1, kernel_size=3, stride=1))
+        layers.append(torch.nn.BatchNorm2d(64))
+        layers.append(torch.nn.ReLU())
+        layers.append(torch.nn.Conv2d(in_channels=64, out_channels=64, padding=1, kernel_size=3, stride=1))
+        layers.append(torch.nn.BatchNorm2d(64))
+        layers.append(torch.nn.ReLU())
+        layers.append(torch.nn.MaxPool2d(kernel_size=2, stride=2))
 
-      layers.append(torch.nn.Conv2d(16,8,5,2,2))
-      layers.append(torch.nn.ReLU())
-      layers.append(torch.nn.MaxPool2d(kernel_size=5))
-      layers.append(torch.nn.BatchNorm2d(16))
+        # block 2
+        layers.append(torch.nn.Conv2d(in_channels=64, out_channels=128, kernel_size=3, stride=1, padding=1))
+        layers.append(torch.nn.BatchNorm2d(128))
+        layers.append(torch.nn.ReLU())
+        layers.append(torch.nn.Conv2d(in_channels=128, out_channels=128, kernel_size=3, stride=1, padding=1))
+        layers.append(torch.nn.BatchNorm2d(128))
+        layers.append(torch.nn.ReLU())
+        layers.append(torch.nn.MaxPool2d(kernel_size=2, stride=2))
 
-      layers.append(torch.nn.Conv2d(8,1,5,2,2))
+        # block 3
+        layers.append(torch.nn.Conv2d(in_channels=128, out_channels=256, kernel_size=3, padding=1, stride=1))
+        layers.append(torch.nn.BatchNorm2d(256))
+        layers.append(torch.nn.ReLU())
+        layers.append(torch.nn.Conv2d(in_channels=256, out_channels=256, kernel_size=3, padding=1, stride=1))
+        layers.append(torch.nn.BatchNorm2d(256))
+        layers.append(torch.nn.ReLU())
+        layers.append(torch.nn.Conv2d(in_channels=256, out_channels=256, kernel_size=3, padding=1, stride=1))
+        layers.append(torch.nn.BatchNorm2d(256))
+        layers.append(torch.nn.ReLU())
+        layers.append(torch.nn.MaxPool2d(kernel_size=2, stride=2))
 
-      self._conv = torch.nn.Sequential(*layers)
+        # block 4
+        layers.append(torch.nn.Conv2d(in_channels=256, out_channels=512, kernel_size=3, padding=1, stride=1))
+        layers.append(torch.nn.BatchNorm2d(512))
+        layers.append(torch.nn.ReLU())
+        layers.append(torch.nn.Conv2d(in_channels=512, out_channels=512, kernel_size=3, padding=1, stride=1))
+        layers.append(torch.nn.BatchNorm2d(512))
+        layers.append(torch.nn.ReLU())
+        layers.append(torch.nn.Conv2d(in_channels=512, out_channels=512, kernel_size=3, padding=1, stride=1))
+        layers.append(torch.nn.BatchNorm2d(512))
+        layers.append(torch.nn.ReLU())
+        layers.append(torch.nn.MaxPool2d(kernel_size=2, stride=2))
 
+        # block 5
+        layers.append(torch.nn.Conv2d(in_channels=512, out_channels=512, kernel_size=3, padding=1, stride=1))
+        layers.append(torch.nn.BatchNorm2d(512))
+        layers.append(torch.nn.ReLU())
+        layers.append(torch.nn.Conv2d(in_channels=512, out_channels=512, kernel_size=3, padding=1, stride=1))
+        layers.append(torch.nn.BatchNorm2d(512))
+        layers.append(torch.nn.ReLU())
+        layers.append(torch.nn.Conv2d(in_channels=512, out_channels=512, kernel_size=3, padding=1, stride=1))
+        layers.append(torch.nn.BatchNorm2d(512))
+        layers.append(torch.nn.ReLU())
+        layers.append(torch.nn.MaxPool2d(kernel_size=2, stride=2))
 
+        layers.append(torch.nn.Conv2d(in_channels=512, out_channels=256, kernel_size=3, padding=1))
+        layers.append(torch.nn.BatchNorm2d(256))
+        layers.append(torch.nn.ReLU(inplace=True))
+        layers.append(torch.nn.Conv2d(in_channels=256, out_channels=128, kernel_size=3, padding=1))
+        layers.append(torch.nn.BatchNorm2d(128))
+        layers.append(torch.nn.ReLU(inplace=True))
+        layers.append(torch.nn.Conv2d(128,1,1))
+
+        #layers.append(torch.nn.Conv2d(3,16,5,2,2))
+        #layers.append(torch.nn.ReLU())
+        #layers.append(torch.nn.Conv2d(512,1,5,2,2))
+        
+        self._conv = torch.nn.Sequential(*layers)
+
+        #classifier = []
+        #classifier.append(torch.nn.Linear(in_features=6144, out_features=4096))
+        #classifier.append(torch.nn.ReLU())
+        #classifier.append(torch.nn.Dropout(p=0.5))
+        #classifier.append(torch.nn.Linear(in_features=4096, out_features=4096))
+        #classifier.append(torch.nn.ReLU())
+        #classifier.append(torch.nn.Dropout(p=0.5))
+        #classifier.append(torch.nn.Linear(in_features=4096, out_features=1))
+
+        #self.classifier = torch.nn.Sequential(*classifier)
 
     def forward(self, img):
         """
@@ -48,8 +106,9 @@ class Planner(torch.nn.Module):
         return (B,2)
         """
         x = self._conv(img)
-        #print(img.shape)
-        #print(x.shape)
+        #x = x.view(x.size(0), -1)
+        #x = self.classifier(x)
+        
         return spatial_argmax(x[:, 0])
         # return self.classifier(x.mean(dim=[-2, -1]))
 
