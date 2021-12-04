@@ -4,6 +4,7 @@ import torch.utils.tensorboard as tb
 import numpy as np
 from utils import load_data
 import dense_transforms
+import time
 
 def train(args):
     from os import path
@@ -33,6 +34,7 @@ def train(args):
     train_data = load_data('drive_data', transform=transform, num_workers=args.num_workers)
 
     global_step = 0
+    start_time = time.time()
     for epoch in range(args.num_epoch):
         model.train()
         losses = []
@@ -58,6 +60,7 @@ def train(args):
         if train_logger is None:
             print('epoch %-3d \t loss = %0.3f' % (epoch, avg_loss))
         save_model(model)
+        print("--- %s seconds ---" % (time.time() - start_time))
 
     save_model(model)
 
