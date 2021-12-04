@@ -202,7 +202,7 @@ if __name__ == '__main__':
 
 
         while n < args.steps_per_track:
-            steps, how_far = pytux.rollout(track, noisy_control, planner=planner, max_frames=1000, verbose=args.verbose, data_callback=collect)
+            steps, how_far = pytux.rollout(track, noisy_control, planner=None, max_frames=1000, verbose=args.verbose, data_callback=collect)
             print(steps, how_far)
             # Add noise after the first round
             aim_noise, vel_noise = args.aim_noise, args.vel_noise
