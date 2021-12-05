@@ -6,7 +6,6 @@ The motive behind this idea was to double the number of outputs in each layer wi
 
 # 2nd Attempt
 In order to improve the controller, I thought it might help to use the fact that there are essentially 2 variables that are important for this first baseline of code, the parameter for the aimpoint when the car should drift, and the parameter for how much the car should steer. In order to test different values, I found that the best parameter for drifting should be between .1 and .7, and the best parameter for steering should be between 1 and 5. This wasn't as help as I would have liked because there were not 2 parameters that worked the best universally, it was more track-dependent, so its likely the "2-parameter" model likely was not comprehensive enough to have success. 
-[controller](controller.py)
 
 # 3rd Attempt
 I thought it might help to have a smaller difference between input and output and to add more layers. Then, each layer would improve more and more, and by adding a lot of layers, this would help. This worked relatively well, and better than the 1st plan by a small margin, but didn't totally work. 
