@@ -81,6 +81,8 @@ class Planner(torch.nn.Module):
         layers.append(torch.nn.ReLU(inplace=True))
         layers.append(torch.nn.Conv2d(128,1,1))
 
+        #layers.append(torch.nn.Softmax2d(1,))
+
         #layers.append(torch.nn.Conv2d(3,16,5,2,2))
         #layers.append(torch.nn.ReLU())
         #layers.append(torch.nn.Conv2d(512,1,5,2,2))
